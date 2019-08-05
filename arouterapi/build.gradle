@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+//赋值与引用
+def rootAndroidId = rootProject.ext.androidId
+
+android {
+    compileSdkVersion rootAndroidId.compileSdkVersion
+
+
+    defaultConfig {
+        minSdkVersion rootAndroidId.minSdkVersion
+        targetSdkVersion rootAndroidId.targetSdkVersion
+        versionCode rootAndroidId.versionCode
+        versionName rootAndroidId.versionName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+
+    implementation project(path: ':arouter_annotation')
+
+    implementation 'org.jetbrains:annotations-java5:15.0'
+}

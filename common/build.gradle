@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+
+//赋值与引用
+def rootAndroidId = rootProject.ext.androidId
+def appId = rootProject.ext.appId
+def support = rootProject.ext.dependencies
+def url = rootProject.ext.url
+
+
+android {
+    compileSdkVersion rootAndroidId.compileSdkVersion
+    defaultConfig {
+        minSdkVersion rootAndroidId.minSdkVersion
+        targetSdkVersion rootAndroidId.targetSdkVersion
+        versionCode rootAndroidId.versionCode
+        versionName rootAndroidId.versionName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+
+    //每个模块都要用到arouter_api对外提供的加载数据接口
+    //其他的app模块都依赖于common公共基础库
+    // api project的方式表示这些接口同样对所有业务子模块开放
+    api project(':arouterapi')
+
+    support.each { k, v -> implementation v }
+
+}

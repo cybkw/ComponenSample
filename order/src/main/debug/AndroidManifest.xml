@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.bkw.module.order">
+
+    <!-- 动态隔离debug环境下，切换为集成化时，不会打包到主工程 -->
+    <!--build时发生的错误：所以加了两行
+    android:appComponentFactory="order"
+        tools:replace="android:appComponentFactory"-->
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:appComponentFactory="order"
+        tools:replace="android:appComponentFactory">
+        <activity android:name=".debug.Order_DebugActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

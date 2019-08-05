@@ -1,0 +1,92 @@
+if (isRelease) {//如果是发布版本，这个模块不能独立运行
+    apply plugin: 'com.android.library'
+} else {
+    apply plugin: 'com.android.application'
+}
+//引入butterKnife的插件
+apply plugin: 'com.jakewharton.butterknife'
+
+//赋值与引用
+def rootAndroidId = rootProject.ext.androidId
+def appId = rootProject.ext.appId
+def support = rootProject.ext.dependencies
+def url = rootProject.ext.url
+
+android {
+    compileSdkVersion rootAndroidId.compileSdkVersion
+    defaultConfig {
+        if (!isRelease) { //如果是集成化模式，不能有applicationId
+            applicationId appId.personal //组件化模式要独立运行所以需要applicationId
+        }
+        minSdkVersion rootAndroidId.minSdkVersion
+        targetSdkVersion rootAndroidId.targetSdkVersion
+        versionCode rootAndroidId.versionCode
+        versionName rootAndroidId.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //这个方法接收三个非空的参数，第一个：确定值的类型，第二个，指定key的名字，第三个：传值（必须是String）
+        //定义这个的原因是src代码中有可能需要用到跨模块交互，如果是组件化模块显然不行
+        //切记：不能在android根节点，只能在defaultConfig或buildTypes节点下。
+        buildConfigField("boolean", "isRelease", String.valueOf(isRelease))
+
+        //在gradle文件中配置选项参数（用于APT传参接收）
+        //切记：必须写在defaultConfig节点下
+        javaCompileOptions {
+            annotationProcessorOptions {
+                //模块名-APT文件生成的哪个包下面
+                arguments = [moduleName: project.getName(), packageNameForAPT: packageNameForAPT]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    //配置资源集，方便测试环境，打包不继承这些代码到正式环境
+    sourceSets {
+        main {
+            if (!isRelease) {
+//                如果是组件化模式，需要单独运行时
+                manifest.srcFile 'src/main/debug/AndroidManifest.xml'
+//                    java.srcDirs = ['src/main/debug/java']
+//                    res.srcDirs = ['src/main/debug/res']
+//                    resources.srcDirs = ['src/main/debug/resources']
+//                    aidl.srcDirs = ['src/main/debug/aidl']
+//                    assets.srcDirs = ['src/main/debug/assets']
+            } else {
+                //集成化模式
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+                java {
+                    //release时debug目录下文件不需要合并到主工程
+                    exclude '**/debug/**'
+                }
+            }
+        }
+    }
+
+    //使用Java8编译
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+
+
+    //引入路由注解
+    implementation project(':arouter_annotation')
+    //注解处理器
+    annotationProcessor project(":arouter_compiler")
+
+    support.each { k, v -> implementation v }
+    processor.each{k,v->annotationProcessor v}
+
+    //公共基础库
+    implementation project(':common')
+}
