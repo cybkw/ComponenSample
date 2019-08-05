@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+
+//赋值与引用
+def rootAndroidId = rootProject.ext.androidId
+def support = rootProject.ext.dependencies
+
+
+android {
+    compileSdkVersion rootAndroidId.compileSdkVersion
+    defaultConfig {
+        minSdkVersion rootAndroidId.minSdkVersion
+        targetSdkVersion rootAndroidId.targetSdkVersion
+        versionCode rootAndroidId.versionCode
+        versionName rootAndroidId.versionName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    support.each { k, v -> implementation v }
+
+}
