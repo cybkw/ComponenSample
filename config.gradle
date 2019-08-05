@@ -42,6 +42,7 @@ ext {
     dependencies = [
             appcompat             : "com.android.support:appcompat-v7:${supportLibrary}",
             recyclerView          : "com.android.support:recyclerview-v7:${supportLibrary}",
+            supportAnnotations    : "com.android.support:support-annotations:${supportLibrary}",
             constraintlayout      : "com.android.support.constraint:constraint-layout:1.1.3",
             okhttp3               : 'com.squareup.okhttp3:okhttp:3.12.0',
             okhttp3loging         : 'com.squareup.okhttp3:logging-interceptor:3.10.0',
